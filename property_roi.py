@@ -1,14 +1,7 @@
-# I need to figure out where the code is breaking:
-# I think it breaks from my if statements in my function inside the ROI class...
-# I have the code ask me the first question "what do you want to do..."
-# I have the code responding the several prompts
-# the code breaks after that point
-# I have not tested the calculate_roi yet bc my code breaks in the "add property" response
-
-
 class Property:
 
     def __init__(self):
+        self.name ="" 
         self.expenses = 0
         self.income = 0
         self.investments = 0
@@ -30,16 +23,18 @@ class Property:
              print(f"Your total investments are {self.investments} ")
         else:
              print("You need to input your total expenses")
-        self.roi = input("Lets calculate your Return on Investment (ROI) ")
-        self.roi = (self.income - self.expenses)*12/self.investments
-        print(f"You ROI is{self.roi}")
+        self.roi = print("Lets calculate your Return on Investment (ROI) ")
+        self.roi = (self.income - self.expenses)*12/self.investments*100
+        print(f"You ROI is{self.roi}%")
 class User:
 
     def __init__(self, name):
-        self.username = {}
+        self.username = name
         self.properties = {}
-        self.name = name
 
+    def __repr__(self):
+        return f"<User {self.username}>"
+    
     def add_properties(self, property):
         self.properties[property.name] = property
 
@@ -55,35 +50,42 @@ class ROI:
             print("user name taken. try again")
         else:
             user = User(username)
-            self.user(user)
+            self.user.append((user))
             print(f"{user} account has been created! ")
         
     def choose_user(self):
         username = input("choose user: ")
-        if any(user.name == username for user in self.user):
+        user = next((u for u in self.user if u.username == username), None)
+        if user is None:
             print("user not found. add account")
         else:
-            user = User(username)
-            self.name(user)
-            print(f"This is {user}'s account ")
+            self.current_user = user
+            print(f"This is {self.current_user}'s account ")
+            return user
 
-    def add_property(self):
-        if any(self.properties == property.name for property in self.add_property):
-             print("property not found ")
+    def add_property(self,user):
+        property_name = input("add your property name ")
+        if property_name in user.properties:
+             print("property is defined ")
         else:
-             property_name = input("add your property name ")
-             property.calculate_roi()
-             self.current_user.add_property(property)
-             print(f"This is {property_name} owned by {self.current_user.username}")
+             
+             prop = Property()
+             prop.name = property_name
+             prop.calculate_roi()
+             user.add_properties(prop)
+             print(f"This is {property_name} owned by {user.username}")
  
     def show_property(self):
-        property = input("which property do you want to view? ")
-        if any(self.properties == property.name for property in self.show_property):
-             print("property not found ")
+        property_name = input("which property do you want to view? ")
+        if property_name in self.current_user.properties:
+             property = self.current_user.properties[property_name]
+             print(f"Property name: {property.name} ")
+             print(f" Total Income: {property.income} ")
+             print(f"Total Expenses: {property.expenses} ")
+             print(f"Total Investments: {property.investments} ")
+             print(f"ROI: {property.roi}% ")
         else:
-             property = Property()
-             self.show_property_property(property)
-             print(f"This is {property} ")
+             print("Property not found.")
 
 
     def run(self):         
@@ -92,20 +94,12 @@ class ROI:
                 if response.lower() == 'add user':
                     self.add_user()
                 elif response.lower() == 'choose user':
-                    self.choose_user()
+                    user = self.choose_user()
                 elif response.lower() == 'add property':
-                    self.add_property()
-                    new_response = input("Please provide your income ")
-                    if new_response.lower() == 'add income':
-                        self.income()
-                    elif new_response.lower() == 'add expenses':
-                        self.expenses()
-                    elif new_response.lower() == 'add investment':
-                        self.investment()
-                    elif new_response.lower() == 'calculate roi':
-                        self.calculate_roi()
+                    if self.current_user is not None:
+                        self.add_property(self.current_user)
                     else:
-                        print("Please try again")
+                        print("Please choose a user ")
                 elif response.lower() == 'view property':
                     self.show_property()
                 elif response == 'quit':
@@ -115,20 +109,3 @@ class ROI:
 
 my_program = ROI()
 my_program.run()
-
-        # self.login_user()
-
-    # def login_user(self):
-    #     username = input("What is  your username? ")
-
-    #     for user in self.users:
-    #         if user.username == username:
-    #             self.current_user = user
-    #             print(f"{user} has logged in")
-    #             break
-    #     else:
-    #         print("Username is incorrect")
-    
-    # def logout(self):
-    #     self.current_user = None
-    #     print("You have succesfully been logged out!")
